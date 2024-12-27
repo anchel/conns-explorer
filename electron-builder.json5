@@ -24,9 +24,6 @@
     'dist-electron'
   ],
   mac: {
-    target: [
-      'dmg',
-    ],
     artifactName: '${name}-${version}-darwin-${arch}-installer.${ext}',
     provisioningProfile: 'build/profilekafkadesktop.provisionprofile',
     extendInfo: {
