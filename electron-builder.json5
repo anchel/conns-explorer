@@ -25,13 +25,7 @@
   ],
   mac: {
     target: [
-      {
-        target: 'dmg',
-        arch: [
-          'x64',
-          'arm64',
-        ],
-      }
+      'dmg',
     ],
     artifactName: '${name}-${version}-darwin-${arch}-installer.${ext}',
     provisioningProfile: 'build/profilekafkadesktop.provisionprofile',
@@ -44,12 +38,7 @@
   },
   win: {
     target: [
-      {
-        target: 'nsis',
-        arch: [
-          'x64',
-        ],
-      },
+      'nsis',
     ],
     artifactName: '${name}-${version}-windows-${arch}-setup.${ext}',
   },
@@ -61,13 +50,7 @@
   },
   linux: {
     target: [
-      {
-        target: 'AppImage',
-        arch: [
-          'x64',
-          'arm64',
-        ],
-      },
+      'AppImage',
     ],
     artifactName: '${name}-${version}-linux-${arch}.${ext}',
   },
