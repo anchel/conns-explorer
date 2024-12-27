@@ -16,7 +16,7 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v4
         with:
-          submodules: "recursive"
+          submodules: 'recursive'
 
       #      - name: Install xcode tools
       #        run: xcode-select --install
@@ -46,18 +46,21 @@ jobs:
         with:
           node-version: 22
 
-      # 安装依赖
-      - run: npm ci
-
       - name: Retrieve the profile and decode it to a file
         env:
           CERTIFICATE_BASE64: ${{ secrets.PROFILE_DATA }}
         run: |
           echo $CERTIFICATE_BASE64 | base64 --decode > build/profilesshconfigeditor.provisionprofile
 
+      # 显示
+      - run: ls -alrth build
+
+      # 安装依赖
+      - run: npm ci
+
       # 构建全平台
       - run: npm run make:all
         env:
-          GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
