@@ -1,0 +1,63 @@
+html.dark {
+    /* 自定义深色背景颜色 */
+    /*--el-bg-color: #26282a;*/
+    --el-color-primary: #d05db3;
+}
+
+:root {
+    /* 主色系 */
+    --el-color-primary: #d05db3;
+    --el-color-primary-light-3: #e89fcf; /* Primary + 20% */
+    --el-color-primary-light-5: #f3cae0; /* Primary + 40% */
+    --el-color-primary-light-7: #f9e3f2; /* Primary + 60% */
+    --el-color-primary-dark-2: #a3448e; /* Primary - 20% */
+
+    /* 辅助色 */
+    --el-color-success: #10b981; /* 绿色，成功状态 */
+    --el-color-warning: #f59e0b; /* 橙色，警告状态 */
+    --el-color-danger: #ef4444; /* 红色，错误状态 */
+    --el-color-info: #909399;; /* 蓝色，信息状态 */
+
+    /* 中性色 */
+    --el-color-gray-1: #f9f5fa; /* 背景色 */
+    --el-color-gray-2: #f4edf4; /* 次背景色 */
+    --el-color-gray-3: #e4d9e6; /* 边框色 */
+    --el-color-gray-4: #d5c4d2; /* 分割线 */
+    --el-color-gray-5: #c6b3c4; /* 卡片阴影 */
+
+    /* 字体颜色 */
+    --el-text-color-primary: #2e2e2e; /* 主要字体颜色 */
+    --el-text-color-regular: #6c6c6c; /* 次要字体颜色 */
+    --el-text-color-placeholder: #9c9c9c; /* 占位符字体颜色 */
+    --el-text-color-disabled: #bcbcbc; /* 禁用状态字体颜色 */
+
+    /*!* 边框颜色 *!*/
+    /*--el-border-color: #e4d9e6; !* 默认边框色 *!*/
+    /*--el-border-color-light: #f3eef4; !* 浅色边框 *!*/
+    /*--el-border-color-dark: #d5c4d2; !* 深色边框 *!*/
+
+    /* 背景颜色 */
+    /*--el-bg-color: #f9f5fa; !* 页面背景 *!*/
+    /*--el-bg-color-overlay: rgba(208, 93, 179, 0.1); !* 模态框遮罩 *!*/
+    --el-bg-color-hover: #f3eef4; /* hover 状态背景色 */
+    --el-bg-color-active: #d05db3; /* 点击状态背景色 */
+
+    /* 按钮颜色 */
+    --el-button-bg-primary: #d05db3;
+    --el-button-hover-bg-primary: #e89fcf;
+    --el-button-active-bg-primary: #a3448e;
+    --el-button-text-color-primary: #ffffff;
+    --el-button-border-color-primary: #d05db3;
+
+    /*!* 输入框颜色 *!*/
+    /*--el-input-bg-color: #ffffff;*/
+    /*--el-input-hover-bg-color: #f9f5fa;*/
+    /*--el-input-border-color: #e4d9e6;*/
+    /*--el-input-focus-border-color: #d05db3;*/
+    /*--el-input-placeholder-color: #9c9c9c;*/
+
+    /* 其他 UI 元素 */
+    --el-slider-active-color: #d05db3;
+    --el-link-color: #d05db3;
+    --el-link-hover-color: #e89fcf;
+}
