@@ -4,18 +4,6 @@
   appId: 'com.anchel.app.desktop.kafka',
   asar: true,
   productName: 'Conns Explorer',
-  publish: [
-    {
-      provider: 'generic',
-      url: 'https://download.anchel.cn/app/conns-explorer/',
-      channel: 'latest-${arch}',
-    },
-    {
-      provider: 'github',
-      releaseType: 'draft',
-      channel: 'latest-${arch}',
-    },
-  ],
   directories: {
     output: 'release/${version}',
   },
@@ -25,10 +13,11 @@
   ],
   mac: {
     target: [
-      'dmg',
-      'zip',
+      'mas'
     ],
     artifactName: '${name}-${version}-darwin-${arch}-installer.${ext}',
+    // category: "public.app-category.developer-tools",
+    // minimumSystemVersion: '12.0',
     provisioningProfile: 'build/profilekafkadesktop.provisionprofile',
     extendInfo: {
       ITSAppUsesNonExemptEncryption: false,
@@ -37,24 +26,8 @@
       teamId: '9J3DW26EZ6',
     },
   },
-  win: {
-    target: [
-      {
-        target: 'nsis',
-      },
-    ],
-    artifactName: '${name}-${version}-windows-${arch}-setup.${ext}',
-  },
-  nsis: {
-    oneClick: false,
-    perMachine: false,
-    allowToChangeInstallationDirectory: true,
-    deleteAppDataOnUninstall: false,
-  },
-  linux: {
-    target: [
-      'AppImage'
-    ],
-    artifactName: '${name}-${version}-linux-${arch}.${ext}',
+  mas: {
+    entitlements: 'build/entitlements.mas.plist',
+    entitlementsInherit: 'build/entitlements.mas.inherit.plist',
   },
 }
