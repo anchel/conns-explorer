@@ -50,7 +50,7 @@ jobs:
         env:
           CERTIFICATE_BASE64: ${{ secrets.PROFILE_DATA }}
         run: |
-          echo $CERTIFICATE_BASE64 | base64 --decode > build/profilesshconfigeditor.provisionprofile
+          echo $CERTIFICATE_BASE64 | base64 --decode > build/profilekafkadesktop.provisionprofile
 
       # 显示
       - run: ls -alrth build
