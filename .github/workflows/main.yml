@@ -57,6 +57,18 @@ jobs:
 
       # 安装依赖
       - run: npm ci
+        
+      - name: create_release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: "${{ github.ref_name }}"
+          release_name: "${{ github.ref_name }}"
+          body: "Release ${{ github.ref_name }}"
+          draft: true
+          prerelease: false
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
       # 构建 arm64
       - run: npm run make:all
@@ -66,8 +78,8 @@ jobs:
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
 
       # 构建 x64
-      - run: npm run make:all:x64
-        env:
-          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+#      - run: npm run make:all:x64
+#        env:
+#          GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+#          APPLE_ID: ${{ secrets.APPLE_ID }}
+#          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
