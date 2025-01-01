@@ -1,5 +1,5 @@
 import tls from 'tls';
-import pkg, { Admin, Kafka as KafkaType } from 'kafkajs';
+import pkg, { Admin, Kafka as KafkaType, Message, Partitioners, Producer } from 'kafkajs';
 import { ConnectionConfig } from '../types';
 import confins from '../config/config';
 import { parseMemberAssignment, parseMemberMetadata } from '../utils/util';
@@ -11,6 +11,7 @@ const { Kafka, ConfigResourceTypes } = pkg;
 class Cluster {
   public kafkaInstance: KafkaType;
   public adminClient: Admin;
+  public producer: Producer | null;
 
   private connected: boolean;
 
@@ -18,6 +19,7 @@ class Cluster {
     this.connected = false;
     this.kafkaInstance = kafkaInstance;
     this.adminClient = kafkaInstance.admin();
+    this.producer = null;
 
     this.adminClient.on(this.adminClient.events.CONNECT, () => {
       console.log('admin.connect');
@@ -28,7 +30,7 @@ class Cluster {
     });
   }
 
-  async connect() {
+  async checkAdminClient() {
     if (this.connected) {
       return;
     }
@@ -36,12 +38,31 @@ class Cluster {
     this.connected = true;
   }
 
+  async checkProducer() {
+    if (!this.producer) {
+      this.producer = this.kafkaInstance.producer({
+        createPartitioner: Partitioners.LegacyPartitioner,
+        allowAutoTopicCreation: false,
+      });
+      this.producer.on(this.producer.events.CONNECT, () => {
+        console.log('producer.connect');
+      });
+      this.producer.on(this.producer.events.DISCONNECT, () => {
+        console.log('producer.disconnect');
+      });
+    }
+    await this.producer.connect();
+  }
+
   async close() {
     await this.adminClient.disconnect();
+    if (this.producer) {
+      await this.producer.disconnect();
+    }
   }
 
   async listBrokers() {
-    await this.connect();
+    await this.checkAdminClient();
     const data = await this.adminClient.describeCluster();
 
     data.brokers = data.brokers.map((item) => {
@@ -55,7 +76,7 @@ class Cluster {
   }
 
   async describeBrokerConfigs(id: number) {
-    await this.connect();
+    await this.checkAdminClient();
     const data = await this.adminClient.describeConfigs({
       includeSynonyms: false,
       resources: [
@@ -70,7 +91,7 @@ class Cluster {
   }
 
   async listTopics() {
-    await this.connect();
+    await this.checkAdminClient();
     const topics = await this.adminClient.listTopics();
     const data = await this.adminClient.fetchTopicMetadata({ topics });
 
@@ -83,7 +104,7 @@ class Cluster {
       numPartitions,
       replicationFactor,
     });
-    await this.connect();
+    await this.checkAdminClient();
     const data = await this.adminClient.createTopics({
       topics: [
         {
@@ -98,7 +119,7 @@ class Cluster {
   }
 
   async deleteTopic(topic: string) {
-    await this.connect();
+    await this.checkAdminClient();
     const data = await this.adminClient.deleteTopics({
       topics: [topic],
     });
@@ -107,7 +128,7 @@ class Cluster {
   }
 
   async describeTopic(topic: string) {
-    await this.connect();
+    await this.checkAdminClient();
     const data = await this.adminClient.fetchTopicMetadata({
       topics: [topic],
     });
@@ -116,7 +137,7 @@ class Cluster {
   }
 
   async describeTopicConfigs(topic: string) {
-    await this.connect();
+    await this.checkAdminClient();
     const data = await this.adminClient.describeConfigs({
       includeSynonyms: false,
       resources: [
@@ -131,7 +152,7 @@ class Cluster {
   }
 
   async createPartitions(topic: string, count: number) {
-    await this.connect();
+    await this.checkAdminClient();
     return await this.adminClient.createPartitions({
       topicPartitions: [
         {
@@ -142,8 +163,16 @@ class Cluster {
     });
   }
 
+  async addTopicMessages(topic: string, messages: Array<Message>) {
+    await this.checkProducer();
+    await this.producer?.send({
+      topic,
+      messages: messages,
+    });
+  }
+
   async listGroups() {
-    await this.connect();
+    await this.checkAdminClient();
     const groups = await this.adminClient.listGroups();
     const data = await this.adminClient.describeGroups(groups.groups.map((item) => item.groupId));
     data.groups.forEach((group) => {
@@ -165,36 +194,36 @@ class Cluster {
   }
 
   async deleteGroup(groupId: string) {
-    await this.connect();
+    await this.checkAdminClient();
     const data = await this.adminClient.deleteGroups([groupId]);
 
     return data;
   }
 
   async fetchTopicOffsets(topic: string) {
-    await this.connect();
+    await this.checkAdminClient();
     const data = await this.adminClient.fetchTopicOffsets(topic);
     return data;
   }
 
   async fetchOffsets(groupId: string, topics: string[]) {
-    await this.connect();
+    await this.checkAdminClient();
     const data = await this.adminClient.fetchOffsets({ groupId, topics });
     return data;
   }
 
   async resetOffsets(groupId: string, topic: string, earliest: boolean) {
-    await this.connect();
+    await this.checkAdminClient();
     return await this.adminClient.resetOffsets({ groupId, topic, earliest });
   }
 
   async setOffsets(groupId: string, topic: string, partitions: Array<{ partition: number; offset: string }>) {
-    await this.connect();
+    await this.checkAdminClient();
     return await this.adminClient.setOffsets({ groupId, topic, partitions });
   }
 
   async fetchLatestMessages(topic: string, numberOfMessages = 1000) {
-    await this.connect();
+    await this.checkAdminClient();
 
     const partitions = await this.adminClient.fetchTopicOffsets(topic);
 
@@ -392,7 +421,7 @@ class ClusterManager {
         throw new Error('ConnectionConfig not found: ' + id);
       }
       cluster = await this.createCluster(conf);
-      await cluster.connect();
+      await cluster.checkAdminClient();
       this.clusters.set(id, cluster);
     }
     return cluster;

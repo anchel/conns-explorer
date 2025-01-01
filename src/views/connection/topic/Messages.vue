@@ -1,9 +1,12 @@
 <template>
   <div>
     <div class="top">
-      <el-button type="primary" :loading="listData.loading" @click="handleFetchMessages">Fetch Messages</el-button>
+      <div class="flex-row-center" style="gap: 15px">
+        <el-button type="primary" :loading="listData.loading" @click="handleFetchMessages" :icon="Refresh"></el-button>
+        <Plus @click="handleAddMessages" style="width: 20px; height: 20px; cursor: pointer" />
+      </div>
 
-      <div>
+      <div class="flex-row-center">
         <Download @click="handleDownload" style="width: 20px; height: 20px; cursor: pointer" />
       </div>
     </div>
@@ -16,15 +19,23 @@
         <el-table-column prop="value" label="Value" show-overflow-tooltip></el-table-column>
       </el-table>
     </div>
+
+    <AddMessages
+      :topic="topic"
+      v-if="status.dialogVisibleAddMessages"
+      v-model:dialog-visible="status.dialogVisibleAddMessages"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue';
-import { Download } from '@element-plus/icons-vue';
+import { Download, Plus, Refresh } from '@element-plus/icons-vue';
 import { fetchTopicMessages, saveFile } from '@/utils/ipc.ts';
 import { ElMessage } from 'element-plus';
 import { useRoute } from 'vue-router';
+
+import AddMessages from '@/views/connection/topic/components/AddMessages.vue';
 
 const route = useRoute();
 
@@ -33,6 +44,10 @@ const { topic } = defineProps({
     type: Object,
     required: true,
   },
+});
+
+const status = reactive({
+  dialogVisibleAddMessages: false,
 });
 
 const listData = reactive({
@@ -62,6 +77,11 @@ const fetchList = async () => {
   } finally {
     listData.loading = false;
   }
+};
+
+const handleAddMessages = () => {
+  console.log('add messages');
+  status.dialogVisibleAddMessages = true;
 };
 
 const handleDownload = async () => {

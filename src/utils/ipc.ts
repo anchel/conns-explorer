@@ -84,6 +84,11 @@ export function createPartitions(id: string, topic: string, count: number) {
   return invoke('create-partitions', { id, topic, count });
 }
 
+// add topic messages
+export function addTopicMessages(id: string, topic: string, messages: Array<any>) {
+  return invoke('add-topic-messages', { id, topic, messages });
+}
+
 // describe topic configs
 export function describeTopicConfigs(id: string, topic: string) {
   return invoke('describe-topic-configs', { id, topic });

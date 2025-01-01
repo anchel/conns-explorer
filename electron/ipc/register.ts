@@ -157,6 +157,13 @@ export function ipc_register(ipcMain: IpcMain, win?: BrowserWindow) {
     return cluster.createPartitions(arg.topic, arg.count);
   });
 
+  // 添加主题消息
+  ipcMain.handle('add-topic-messages', async (_: any, arg: any) => {
+    console.log('add-topic-messages', arg);
+    let cluster = await clusterManager.getCluster(arg.id);
+    return cluster.addTopicMessages(arg.topic, arg.messages);
+  });
+
   // 获取主题的配置
   ipcMain.handle('describe-topic-configs', async (_: any, arg: any) => {
     console.log('describe-topic-configs', arg);
